@@ -30,5 +30,3 @@ jobs:
 
       - name: run unit test
         run: npm test
-        env:
-          MONGO_URI: "mongodb://localhost:27017/testdb"
