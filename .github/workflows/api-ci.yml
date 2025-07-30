@@ -1,3 +1,88 @@
+# name: API CI
+
+# on:
+#   push:
+#     paths:
+#       - "./api/**"
+#       - ".github/workflows/api-ci.yml"
+
+# jobs:
+#   unit-test:
+#     runs-on: windows-latest
+
+#     defaults:
+#       run:
+#         working-directory: ./api
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
+#           cache: "npm"
+#           cache-dependency-path: ./api/package-lock.json
+
+#       - name: Install dependencies
+#         shell: bash
+#         run: npm ci
+
+#       - name: run unit test
+#         shell: bash
+#         run: echo "omitiendo pruebas"
+
+#   linter:
+#     runs-on: windows-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
+#           cache: "npm"
+#           cache-dependency-path: ./api/package-lock.json
+
+#       - name: Install dependencies
+#         shell: bash
+#         run: npm install
+
+#       - name: run linter
+#         shell: bash
+#         run: echo "omitiendo linter"
+
+#   e2e:
+#     runs-on: windows-latest
+#     container:
+#       image: node:20
+
+#     services:
+#       mongo-e2e:
+#         image: mongo:4.4
+#         ports:
+#           - 27017:27017
+#         env:
+#           MONGO_INITDB_ROOT_USERNAME: test
+#           MONGO_INITDB_ROOT_PASSWORD: test123
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       - name: Install dependencies
+#         shell: bash
+#         run: npm ci
+
+#       - name: run e2e
+#         run: echo "omitiendo pruebas e2e"
+
+#         env:
+#           MONGO_DB_NAME: demo
+#           MONGO_URL: mongodb://test:test123@mongo-e2e:27017?retryWrites=true&writeConcern=majority
+
 name: API CI
 
 on:
@@ -8,7 +93,7 @@ on:
 
 jobs:
   unit-test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest 
 
     defaults:
       run:
@@ -22,66 +107,71 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: "npm"
+          cache: npm
           cache-dependency-path: ./api/package-lock.json
 
       - name: Install dependencies
-        shell: bash
         run: npm ci
 
       - name: run unit test
-        shell: bash
         run: echo "omitiendo pruebas"
-  
 
   linter:
-      runs-on: windows-latest
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+    runs-on: ubuntu-latest  
 
-        - name: Setup Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: 22
-            cache: "npm"
-            cache-dependency-path: ./api/package-lock.json
+    defaults:
+      run:
+        working-directory: ./api
 
-        - name: Install dependencies
-          shell: bash
-          run: npm ci
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        - name: run linter
-          shell: bash
-          run: echo "omitiendo linter"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ./api/package-lock.json
 
+      - name: Install dependencies
+        run: npm install
+
+      - name: run linter
+        run: echo "omitiendo linter"
 
   e2e:
-    runs-on: windows-latest
-    container:
-        image: node:20
-    
+    runs-on: ubuntu-latest  
+
+    defaults:
+      run:
+        working-directory: ./api
+
     services:
       mongo-e2e:
-          image: mongo:4.4
-          ports:
-             - 27017:27017
-          env:
-            MONGO_INITDB_ROOT_USERNAME: test
-            MONGO_INITDB_ROOT_PASSWORD: test123
-
+        image: mongo:4.4
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: test
+          MONGO_INITDB_ROOT_PASSWORD: test123
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ./api/package-lock.json
+
       - name: Install dependencies
-        shell: bash
-        run: npm ci
+        run: npm install
 
       - name: run e2e
-        run: echo "omitiendo pruebas e2e"
-
         env:
           MONGO_DB_NAME: demo
-          MONGO_URL: mongodb://test:test123@mongo-e2e:27017?retryWrites=true&writeConcern=majority
+          MONGO_URL: mongodb://test:test123@mongo-e2e:27017
+        run: echo "omitiendo pruebas e2e"
