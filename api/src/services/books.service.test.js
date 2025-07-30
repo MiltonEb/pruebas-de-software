@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 /* Nuestro objeto de pruebas */
 const BooksService = require('./books.service');
 
